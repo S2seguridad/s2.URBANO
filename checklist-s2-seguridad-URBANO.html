@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist Trabajos en Altura — S2 Seguridad</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root {
+    --rojo:    #C0132A;
+    --borde:   #7B0D1E;
+    --rosa:    #E8526A;
+    --rosita:  #F5C2CC;
+    --crema:   #FFF5F6;
+    --gris1:   #1A1A1A;
+    --gris2:   #444;
+    --gris3:   #888;
+    --gris4:   #DDD;
+    --blanco:  #FFFFFF;
+    --ok:      #2E7D32;
+    --no:      #C62828;
+    --na:      #757575;
+    --warn:    #E65100;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--crema);
+    color: var(--gris1);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, var(--borde) 0%, var(--rojo) 60%, var(--rosa) 100%);
+    color: var(--blanco);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 30%;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .header-inner {
+    position: relative;
+    z-index: 2;
+    padding: 20px 20px 16px;
+  }
+  .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .logo-badge {
+    width: 52px; height: 52px;
+    background: var(--blanco);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-badge span {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--rojo);
+    letter-spacing: -1px;
+  }
+  .logo-text h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .logo-text p {
+    font-size: 11px;
+    opacity: 0.8;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .doc-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .doc-sub {
+    font-size: 13px;
+    opacity: 0.85;
+    font-weight: 500;
+  }
+
+  /* ── META FORM ── */
+  .meta-section {
+    background: var(--blanco);
+    border-left: 4px solid var(--rojo);
+    margin: 12px;
+    border-radius: 8px;
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+  .meta-section h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--rojo);
+    margin-bottom: 10px;
+  }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .meta-grid .full { grid-column: 1 / -1; }
+  .field label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gris3);
+    margin-bottom: 3px;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    border: 1.5px solid var(--gris4);
+    border-radius: 5px;
+    padding: 7px 9px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    color: var(--gris1);
+    background: #FAFAFA;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--rojo);
+    background: var(--blanco);
+  }
+  .field textarea { resize: vertical; min-height: 50px; }
+
+  /* ── SECTIONS ── */
+  .section {
+    margin: 12px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  }
+  .section-header {
+    background: linear-gradient(90deg, var(--borde), var(--rojo));
+    color: var(--blanco);
+    padding: 11px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-header .icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .section-header h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    flex: 1;
+  }
+  .section-header .toggle {
+    font-size: 18px;
+    transition: transform 0.3s;
+  }
+  .section-header.collapsed .toggle {
+    transform: rotate(-90deg);
+  }
+  .section-header .badge {
+    background: rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .section-body {
+    background: var(--blanco);
+    transition: max-height 0.3s ease;
+    overflow: hidden;
+  }
+  .section-body.hidden { display: none; }
+
+  /* ── ITEMS ── */
+  .item {
+    border-bottom: 1px solid #F0E0E3;
+    padding: 10px 14px;
+  }
+  .item:last-child { border-bottom: none; }
+  .item-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gris1);
+    margin-bottom: 7px;
+    line-height: 1.4;
+  }
+  .item-text .num {
+    color: var(--rojo);
+    font-weight: 700;
+    margin-right: 4px;
+  }
+  .item-controls {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .btn-check {
+    border: 2px solid;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: transparent;
+    flex-shrink: 0;
+  }
+  .btn-ok   { border-color: var(--ok);   color: var(--ok); }
+  .btn-no   { border-color: var(--no);   color: var(--no); }
+  .btn-na   { border-color: var(--na);   color: var(--na); }
+  .btn-ok.active   { background: var(--ok);   color: #fff; }
+  .btn-no.active   { background: var(--no);   color: #fff; }
+  .btn-na.active   { background: var(--na);   color: #fff; }
+  .item-obs {
+    margin-top: 7px;
+    width: 100%;
+    border: 1.5px solid var(--gris4);
+    border-radius: 5px;
+    padding: 6px 9px;
+    font-size: 12px;
+    font-family: 'Barlow', sans-serif;
+    color: var(--gris2);
+    display: none;
+    resize: vertical;
+    min-height: 40px;
+  }
+  .item-obs.visible { display: block; }
+
+  /* ── RIESGO BADGE ── */
+  .risk {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .risk-a  { background: #FFEBEE; color: #B71C1C; }
+  .risk-m  { background: #FFF3E0; color: #E65100; }
+  .risk-b  { background: #E8F5E9; color: #1B5E20; }
+
+  /* ── SUMMARY BAR ── */
+  .summary-bar {
+    position: sticky;
+    bottom: 0;
+    background: var(--borde);
+    color: var(--blanco);
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 100;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.2);
+  }
+  .sum-item {
+    text-align: center;
+    line-height: 1;
+  }
+  .sum-item .num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 26px;
+  }
+  .sum-item .lbl {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+  .sum-ok  { color: #81C784; }
+  .sum-no  { color: #EF9A9A; }
+  .sum-na  { color: #B0BEC5; }
+  .sum-pct { color: #FFD54F; }
+
+  /* ── BUTTONS ── */
+  .actions {
+    margin: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .btn-action {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-print {
+    background: var(--rojo);
+    color: var(--blanco);
+  }
+  .btn-reset {
+    background: var(--gris4);
+    color: var(--gris2);
+  }
+  .btn-action:active { transform: scale(0.97); }
+
+  /* ── FIRMA ── */
+  .firma-section {
+    margin: 12px;
+    background: var(--blanco);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  }
+  .firma-header {
+    background: linear-gradient(90deg, var(--borde), var(--rojo));
+    color: var(--blanco);
+    padding: 11px 14px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .firma-body {
+    padding: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .firma-box {
+    text-align: center;
+  }
+  .firma-line {
+    border-top: 2px solid var(--gris4);
+    margin: 30px 8px 6px;
+  }
+  .firma-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gris3);
+  }
+  .canvas-container {
+    border: 1.5px dashed var(--gris4);
+    border-radius: 6px;
+    margin-bottom: 6px;
+    background: #FAFAFA;
+    cursor: crosshair;
+    position: relative;
+  }
+  .canvas-container canvas {
+    display: block;
+    width: 100%;
+    height: 80px;
+    touch-action: none;
+  }
+  .clear-sig {
+    font-size: 10px;
+    color: var(--gris3);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: #fff; }
+    .summary-bar, .actions, .btn-action { display: none !important; }
+    .section-body.hidden { display: block !important; }
+    .section { break-inside: avoid; }
+    header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .section-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .item-obs { display: block !important; }
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    margin: 12px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--gris3);
+    padding-bottom: 70px;
+  }
+  footer strong { color: var(--rojo); }
+
+  /* ── PROGRESS ── */
+  .progress-wrap {
+    margin: 12px;
+    background: var(--blanco);
+    border-radius: 8px;
+    padding: 10px 14px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gris3);
+    margin-bottom: 6px;
+  }
+  .progress-bar {
+    height: 8px;
+    background: var(--gris4);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--borde), var(--rosa));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* ── FOTOS ── */
+  .fotos-section {
+    margin: 12px;
+    background: var(--blanco);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  }
+  .fotos-header {
+    background: linear-gradient(90deg, var(--borde), var(--rojo));
+    color: var(--blanco);
+    padding: 11px 14px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .fotos-sub {
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.8;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: auto;
+  }
+  .fotos-body {
+    padding: 14px;
+  }
+  .fotos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .foto-slot {
+    border: 2px dashed var(--rosita);
+    border-radius: 8px;
+    background: #FFF8F9;
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .foto-slot:hover { border-color: var(--rojo); background: #FFF0F2; }
+  .foto-slot.has-foto { border-style: solid; border-color: var(--rosa); }
+  .foto-slot input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .foto-slot .placeholder {
+    text-align: center;
+    pointer-events: none;
+  }
+  .foto-slot .placeholder .cam-icon { font-size: 28px; margin-bottom: 4px; }
+  .foto-slot .placeholder .cam-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gris3);
+  }
+  .foto-slot .placeholder .cam-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--rosa);
+    margin-top: 2px;
+  }
+  .foto-slot .foto-preview {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    display: none;
+    pointer-events: none;
+  }
+  .foto-slot.has-foto .foto-preview { display: block; }
+  .foto-slot.has-foto .placeholder { display: none; }
+  .foto-slot .foto-remove {
+    position: absolute;
+    top: 5px; right: 5px;
+    background: rgba(192,19,42,0.85);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 22px; height: 22px;
+    font-size: 13px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    z-index: 10;
+  }
+  .foto-slot.has-foto .foto-remove { display: flex; }
+  .foto-slot .foto-caption {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(123,13,30,0.75);
+    color: #fff;
+    font-size: 10px;
+    padding: 3px 6px;
+    display: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .foto-slot.has-foto .foto-caption { display: block; }
+  .foto-add-btn {
+    width: 100%;
+    border: 2px dashed var(--rosita);
+    border-radius: 8px;
+    background: #FFF8F9;
+    padding: 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gris3);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .foto-add-btn:hover { border-color: var(--rojo); color: var(--rojo); background: #FFF0F2; }
+  .foto-desc-field {
+    width: 100%;
+    border: 1.5px solid var(--gris4);
+    border-radius: 5px;
+    padding: 7px 9px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    color: var(--gris2);
+    resize: vertical;
+    min-height: 44px;
+    margin-top: 8px;
+    outline: none;
+  }
+  .foto-desc-field:focus { border-color: var(--rojo); }
+  .foto-counter {
+    font-size: 11px;
+    color: var(--gris3);
+    text-align: right;
+    margin-top: 6px;
+    font-weight: 600;
+  }
+  .foto-counter span { color: var(--rojo); font-weight: 800; }
+  .foto-obligatoria-warn {
+    background: #FFF3E0;
+    border-left: 3px solid var(--warn);
+    border-radius: 5px;
+    padding: 7px 10px;
+    font-size: 11px;
+    color: var(--warn);
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: none;
+  }
+  .foto-obligatoria-warn.visible { display: block; }
+
+  @media print {
+    .foto-add-btn, .foto-slot input[type="file"], .foto-remove { display: none !important; }
+    .foto-slot { border-style: solid !important; min-height: 100px; }
+    .fotos-section { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-row">
+      <div class="logo-badge"><span>S2</span></div>
+      <div class="logo-text">
+        <h1>S2 Seguridad</h1>
+        <p>Consultoría en Seguridad e Higiene Laboral</p>
+      </div>
+    </div>
+    <div class="doc-title">Checklist de Seguridad<br>Trabajos en Altura — Vía Pública</div>
+    <div class="doc-sub">Barquilla sobre camión articulado · Un hombre en altura</div>
+  </div>
+</header>
+
+<!-- DATOS GENERALES -->
+<div class="meta-section">
+  <h2>📋 Datos de la Inspección</h2>
+  <div class="meta-grid">
+    <div class="field full">
+      <label>Empresa / Razón Social</label>
+      <input type="text" id="empresa" placeholder="Nombre del cliente">
+    </div>
+    <div class="field">
+      <label>Fecha</label>
+      <input type="date" id="fecha">
+    </div>
+    <div class="field">
+      <label>Hora de inicio</label>
+      <input type="time" id="hora">
+    </div>
+    <div class="field full">
+      <label>Ubicación / Tramo de vía</label>
+      <input type="text" id="ubicacion" placeholder="Calle, intersección o referencia">
+    </div>
+    <div class="field">
+      <label>Inspector S2</label>
+      <input type="text" id="inspector" placeholder="Apellido y Nombre">
+    </div>
+    <div class="field">
+      <label>Legajo / DNI</label>
+      <input type="text" id="legajo">
+    </div>
+    <div class="field full">
+      <label>Tipo de trabajo</label>
+      <select id="tipo_trabajo">
+        <option value="">— Seleccionar —</option>
+        <option>Pintura de semáforos</option>
+        <option>Pintura de postes de iluminación</option>
+        <option>Verificación puesta a tierra — columnas</option>
+        <option>Recambio de luminarias</option>
+        <option>Recambio de postes</option>
+        <option>Mantenimiento general vía pública</option>
+        <option>Múltiple (detallar en observaciones)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Operario en altura</label>
+      <input type="text" id="op_altura" placeholder="Apellido y Nombre">
+    </div>
+    <div class="field">
+      <label>Operario a cota cero</label>
+      <input type="text" id="op_cero" placeholder="Apellido y Nombre">
+    </div>
+    <div class="field full">
+      <label>Nº de camión / Patente</label>
+      <input type="text" id="camion" placeholder="Patente / identificación del vehículo">
+    </div>
+    <div class="field full">
+      <label>Observaciones generales previas</label>
+      <textarea id="obs_generales" placeholder="Condiciones del lugar, clima, particularidades..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- BARRA DE PROGRESO -->
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span>Avance de la inspección</span>
+    <span id="pct-label">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║  SECCIONES DE VERIFICACIÓN               ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+
+<!-- 1. SEÑALIZACIÓN Y VALLADO -->
+<div class="section" id="sec-senalizacion">
+  <div class="section-header" onclick="toggleSection('senalizacion')">
+    <span class="icon">🚧</span>
+    <h3>1. Señalización y Vallado</h3>
+    <span class="badge" id="badge-senalizacion">0/7</span>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="section-body" id="body-senalizacion">
+    <div id="items-senalizacion"></div>
+  </div>
+</div>
+
+<!-- 2. EPP -->
+<div class="section" id="sec-epp">
+  <div class="section-header" onclick="toggleSection('epp')">
+    <span class="icon">🦺</span>
+    <h3>2. Estado y Uso de EPP</h3>
+    <span class="badge" id="badge-epp">0/10</span>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="section-body" id="body-epp">
+    <div id="items-epp"></div>
+  </div>
+</div>
+
+<!-- 3. RIESGO ELÉCTRICO -->
+<div class="section" id="sec-electrico">
+  <div class="section-header" onclick="toggleSection('electrico')">
+    <span class="icon">⚡</span>
+    <h3>3. Riesgo Eléctrico</h3>
+    <span class="badge" id="badge-electrico">0/9</span>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="section-body" id="body-electrico">
+    <div id="items-electrico"></div>
+  </div>
+</div>
+
+<!-- 4. BARQUILLA Y BRAZO ARTICULADO -->
+<div class="section" id="sec-barquilla">
+  <div class="section-header" onclick="toggleSection('barquilla')">
+    <span class="icon">🏗️</span>
+    <h3>4. Barquilla y Brazo Articulado</h3>
+    <span class="badge" id="badge-barquilla">0/10</span>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="section-body" id="body-barquilla">
+    <div id="items-barquilla"></div>
+  </div>
+</div>
+
+<!-- 5. PROTECCIÓN COLECTIVA -->
+<div class="section" id="sec-colectiva">
+  <div class="section-header" onclick="toggleSection('colectiva')">
+    <span class="icon">🛡️</span>
+    <h3>5. Protección Colectiva</h3>
+    <span class="badge" id="badge-colectiva">0/7</span>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="section-body" id="body-colectiva">
+    <div id="items-colectiva"></div>
+  </div>
+</div>
+
+<!-- 6. HERRAMIENTAS Y EQUIPOS -->
+<div class="section" id="sec-herramientas">
+  <div class="section-header" onclick="toggleSection('herramientas')">
+    <span class="icon">🔧</span>
+    <h3>6. Herramientas y Equipos</h3>
+    <span class="badge" id="badge-herramientas">0/8</span>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="section-body" id="body-herramientas">
+    <div id="items-herramientas"></div>
+  </div>
+</div>
+
+<!-- 7. ORDEN Y LIMPIEZA -->
+<div class="section" id="sec-orden">
+  <div class="section-header" onclick="toggleSection('orden')">
+    <span class="icon">🧹</span>
+    <h3>7. Orden y Limpieza</h3>
+    <span class="badge" id="badge-orden">0/6</span>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="section-body" id="body-orden">
+    <div id="items-orden"></div>
+  </div>
+</div>
+
+<!-- 8. RIESGO VIAL Y TRÁNSITO -->
+<div class="section" id="sec-vial">
+  <div class="section-header" onclick="toggleSection('vial')">
+    <span class="icon">🚗</span>
+    <h3>8. Riesgo Vial y Tránsito</h3>
+    <span class="badge" id="badge-vial">0/6</span>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="section-body" id="body-vial">
+    <div id="items-vial"></div>
+  </div>
+</div>
+
+<!-- 9. EMERGENCIAS Y COMUNICACIONES -->
+<div class="section" id="sec-emergencias">
+  <div class="section-header" onclick="toggleSection('emergencias')">
+    <span class="icon">🚨</span>
+    <h3>9. Emergencias y Comunicaciones</h3>
+    <span class="badge" id="badge-emergencias">0/6</span>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="section-body" id="body-emergencias">
+    <div id="items-emergencias"></div>
+  </div>
+</div>
+
+<!-- 10. CONDICIONES AMBIENTALES -->
+<div class="section" id="sec-ambiental">
+  <div class="section-header" onclick="toggleSection('ambiental')">
+    <span class="icon">🌤️</span>
+    <h3>10. Condiciones Ambientales</h3>
+    <span class="badge" id="badge-ambiental">0/5</span>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="section-body" id="body-ambiental">
+    <div id="items-ambiental"></div>
+  </div>
+</div>
+
+<!-- FOTOS -->
+<div class="fotos-section">
+  <div class="fotos-header">
+    📷 Registro Fotográfico
+    <span class="fotos-sub">Mínimo 2 fotos obligatorias</span>
+  </div>
+  <div class="fotos-body">
+    <div class="foto-obligatoria-warn" id="foto-warn">
+      ⚠ Se requieren al menos 2 fotos para completar el registro.
+    </div>
+    <div class="fotos-grid" id="fotos-grid">
+      <!-- slots generados por JS -->
+    </div>
+    <button class="foto-add-btn" id="btn-add-foto" onclick="addFotoSlot()">
+      + Agregar otra foto
+    </button>
+    <textarea class="foto-desc-field" id="foto-desc-general" placeholder="Descripción general del registro fotográfico (condiciones del lugar, situaciones observadas...)"></textarea>
+    <div class="foto-counter">Fotos cargadas: <span id="foto-count">0</span> / <span id="foto-total">2</span> (mín. 2)</div>
+  </div>
+</div>
+
+<!-- FIRMAS -->
+<div class="firma-section">
+  <div class="firma-header">✍️ Firmas y Conformidad</div>
+  <div class="firma-body">
+    <div class="firma-box">
+      <div class="canvas-container">
+        <canvas id="sig-inspector" width="300" height="80"></canvas>
+      </div>
+      <button class="clear-sig" onclick="clearSig('sig-inspector')">Borrar firma</button>
+      <div class="firma-line"></div>
+      <div class="firma-label">Inspector S2 Seguridad</div>
+    </div>
+    <div class="firma-box">
+      <div class="canvas-container">
+        <canvas id="sig-responsable" width="300" height="80"></canvas>
+      </div>
+      <button class="clear-sig" onclick="clearSig('sig-responsable')">Borrar firma</button>
+      <div class="firma-line"></div>
+      <div class="firma-label">Responsable de Empresa</div>
+    </div>
+    <div class="firma-box">
+      <div class="canvas-container">
+        <canvas id="sig-op1" width="300" height="80"></canvas>
+      </div>
+      <button class="clear-sig" onclick="clearSig('sig-op1')">Borrar firma</button>
+      <div class="firma-line"></div>
+      <div class="firma-label">Operario en Altura</div>
+    </div>
+    <div class="firma-box">
+      <div class="canvas-container">
+        <canvas id="sig-op2" width="300" height="80"></canvas>
+      </div>
+      <button class="clear-sig" onclick="clearSig('sig-op2')">Borrar firma</button>
+      <div class="firma-line"></div>
+      <div class="firma-label">Operario a Cota Cero</div>
+    </div>
+  </div>
+</div>
+
+<!-- ACCIONES -->
+<div class="actions">
+  <button class="btn-action btn-print" id="btn-pdf" onclick="generarPDF()">📄 Generar PDF</button>
+  <button class="btn-action btn-reset" onclick="resetForm()">↺ Nuevo Formulario</button>
+</div>
+<div id="pdf-status" style="margin:0 12px 10px;display:none;background:#FFF0F2;border-left:4px solid var(--rojo);border-radius:6px;padding:10px 14px;font-size:13px;font-weight:600;color:var(--rojo);"></div>
+
+<footer>
+  <strong>S2 Seguridad</strong> — Consultoría en Seguridad e Higiene Laboral<br>
+  Documento de uso interno para inspectores habilitados.<br>
+  Versión 1.0 · 2025
+</footer>
+
+<!-- BARRA RESUMEN -->
+<div class="summary-bar">
+  <div class="sum-item">
+    <div class="num sum-ok" id="count-ok">0</div>
+    <div class="lbl">Cumple</div>
+  </div>
+  <div class="sum-item">
+    <div class="num sum-no" id="count-no">0</div>
+    <div class="lbl">No cumple</div>
+  </div>
+  <div class="sum-item">
+    <div class="num sum-na" id="count-na">0</div>
+    <div class="lbl">N/A</div>
+  </div>
+  <div class="sum-item">
+    <div class="num sum-pct" id="count-pct">—</div>
+    <div class="lbl">Conformidad</div>
+  </div>
+</div>
+
+<script>
+// ─── DATOS ────────────────────────────────────────────────────────────────────
+const CHECKLIST = {
+  senalizacion: {
+    items: [
+      { text: "Se delimitó el área de trabajo con conos y/o balizas reflectivas en todo el perímetro de la tarea", risk: "a" },
+      { text: "La distancia de aviso anticipado de la zona de trabajo es adecuada según velocidad de la vía", risk: "a" },
+      { text: "Se colocaron carteles de 'HOMBRES TRABAJANDO' visibles desde ambos sentidos de circulación", risk: "m" },
+      { text: "Las señales utilizadas cumplen normativa vial vigente (colores, tamaño, retroreflectividad)", risk: "m" },
+      { text: "El vallado impide el ingreso de peatones a la zona de riesgo", risk: "a" },
+      { text: "Se cuenta con persona designada para el control de tránsito (banderillero / señalero) cuando corresponde", risk: "a" },
+      { text: "En horario nocturno o baja visibilidad: señales luminosas y/o balizas destellantes activas", risk: "a" }
+    ]
+  },
+  epp: {
+    items: [
+      { text: "Casco de seguridad con arnés: en buen estado, talla adecuada, con barbijo (en barquilla siempre)", risk: "a" },
+      { text: "Arnés de seguridad completo (clase III o superior) con doble eslinga con absorbedor de energía — operario en barquilla", risk: "a" },
+      { text: "Punto de anclaje del arnés correctamente instalado en la barquilla", risk: "a" },
+      { text: "Calzado de seguridad dieléctrico con puntera reforzada (ambos operarios)", risk: "a" },
+      { text: "Guantes dieléctricos de clase adecuada a la tensión de trabajo (operario en altura)", risk: "a" },
+      { text: "Guantes de protección mecánica para el operario a cota cero", risk: "m" },
+      { text: "Ropa de trabajo de alta visibilidad (clase 2 mínimo, ambos operarios)", risk: "a" },
+      { text: "Anteojos / gafas de seguridad (protección contra proyección de partículas y UV)", risk: "m" },
+      { text: "Protección auditiva disponible cuando se usan equipos de percusión o corte", risk: "b" },
+      { text: "EPP en buen estado de conservación, sin deterioro visible, dentro de fecha de vencimiento", risk: "a" }
+    ]
+  },
+  electrico: {
+    items: [
+      { text: "Se verificó y documentó la tensión de trabajo en la instalación (BT / MT / desenerizado)", risk: "a" },
+      { text: "Se gestionó y cuenta con permiso de trabajo / LOTO para trabajos en instalaciones eléctricas", risk: "a" },
+      { text: "La puesta a tierra de las columnas fue verificada con instrumento adecuado y registrada", risk: "a" },
+      { text: "Se respetan las distancias de seguridad a líneas eléctricas aéreas según ENRE/normativa vigente", risk: "a" },
+      { text: "Las herramientas eléctricas portátiles tienen doble aislación y están en buen estado", risk: "a" },
+      { text: "Se utilizan detectores de tensión / testers antes de toda intervención en elemento eléctrico", risk: "a" },
+      { text: "Cables de extensión y conexiones sin empalmes artesanales, sin daño en aislación", risk: "m" },
+      { text: "Se aplica procedimiento LOTO (bloqueo y etiquetado) antes de desconexión/conexión", risk: "a" },
+      { text: "El personal cuenta con habilitación para trabajos eléctricos (matrícula / capacitación registrada)", risk: "a" }
+    ]
+  },
+  barquilla: {
+    items: [
+      { text: "El vehículo posee verificación técnica y libro de inspecciones al día", risk: "a" },
+      { text: "La barquilla cuenta con certificado de habilitación y carga máxima indicada y respetada", risk: "a" },
+      { text: "El brazo articulado funciona correctamente en todos sus movimientos antes del inicio de tarea", risk: "a" },
+      { text: "Los estabilizadores / patas niveladoras del camión están extendidos y apoyados sobre superficie firme", risk: "a" },
+      { text: "Se verifica la capacidad portante del suelo bajo los estabilizadores (planchas si es necesario)", risk: "m" },
+      { text: "La barquilla cuenta con sistema de descenso de emergencia operativo (manual / hidráulico)", risk: "a" },
+      { text: "Los controles de la barquilla y los del camión están en buen estado y señalizados", risk: "m" },
+      { text: "El operario en barquilla conoce el procedimiento de emergencia de descenso", risk: "a" },
+      { text: "Está prohibido sobrepasar la altura de trabajo indicada en el certificado del equipo", risk: "a" },
+      { text: "El operario a cota cero permanece en zona visible y no abandona la tarea mientras hay personal en altura", risk: "a" }
+    ]
+  },
+  colectiva: {
+    items: [
+      { text: "Redes, pantallas o lonas de retención de objetos/herramientas instaladas en barquilla cuando corresponde", risk: "a" },
+      { text: "Las herramientas en altura están con portaherramientas y/o retenidas con driza (anti-caída de objetos)", risk: "a" },
+      { text: "El área debajo del radio de trabajo está despejada de personal no autorizado", risk: "a" },
+      { text: "Se prohíbe el paso peatonal bajo la vertical del trabajo (acordonamiento efectivo)", risk: "a" },
+      { text: "Se verifica estabilidad del poste / columna antes de intervenir (especialmente en recambio)", risk: "m" },
+      { text: "En recambio de postes: se cuenta con sistema de sujeción para el traslado seguro del poste retirado", risk: "m" },
+      { text: "Los residuos y materiales removidos se depositan en contenedor / zona habilitada, fuera de la calzada", risk: "b" }
+    ]
+  },
+  herramientas: {
+    items: [
+      { text: "Las herramientas dieléctricas tienen la marcación de tensión nominal y están en buen estado", risk: "a" },
+      { text: "Se cuenta con maletín o bandolera para transporte de herramientas en altura (sin transporte manual suelto)", risk: "a" },
+      { text: "Los equipos de medición eléctrica (multímetro, pinza amperimétrica, detector de tensión) están calibrados", risk: "m" },
+      { text: "Las herramientas de corte tienen protección / funda cuando no están en uso", risk: "m" },
+      { text: "No se utilizan herramientas improvisadas o en mal estado visible", risk: "a" },
+      { text: "El equipo de soldadura / esmeril (si aplica) cuenta con pantalla y EPP específico", risk: "m" },
+      { text: "Las luminarias nuevas a instalar están correctamente embaladas y no presentan daños", risk: "b" },
+      { text: "Se cuenta con recipientes adecuados para residuos de luminarias (lámparas de mercurio, sodio, etc.)", risk: "m" }
+    ]
+  },
+  orden: {
+    items: [
+      { text: "El área de trabajo a cota cero está ordenada: materiales en zona delimitada, no obstruyen escape", risk: "m" },
+      { text: "Los cables y mangueras en el piso están señalizados y no generan riesgo de tropiezos", risk: "m" },
+      { text: "Los residuos de trabajo (restos de cableado, embalajes, materiales sobrantes) se retiran progresivamente", risk: "b" },
+      { text: "Al final de la jornada el área queda completamente limpia y señalización removida", risk: "m" },
+      { text: "Los materiales peligrosos (solventes, pinturas) están en recipientes cerrados y alejados de fuentes de calor", risk: "a" },
+      { text: "El camión y equipos quedan estacionados en posición segura al finalizar o pausar la tarea", risk: "b" }
+    ]
+  },
+  vial: {
+    items: [
+      { text: "Se cuenta con autorización municipal / permiso de corte o uso de vía pública vigente", risk: "a" },
+      { text: "En cortes parciales de calzada: se respeta la señalización de desvío y se mantiene carril libre mínimo", risk: "a" },
+      { text: "El vehículo (camión) tiene balizas destellantes activas en todo momento durante la intervención", risk: "a" },
+      { text: "Se evita trabajar en horas pico de tránsito cuando la tarea comprometa carriles de alta circulación", risk: "m" },
+      { text: "El personal no circula por la calzada fuera de la zona delimitada", risk: "a" },
+      { text: "Ante emergencia vial, se tiene protocolo definido de evacuación rápida del área", risk: "m" }
+    ]
+  },
+  emergencias: {
+    items: [
+      { text: "Se cuenta con botiquín de primeros auxilios en el vehículo, completo y vigente", risk: "a" },
+      { text: "El equipo conoce los números de emergencia (SAME/SAMU, bomberos, centro de quemados, hospital más cercano)", risk: "a" },
+      { text: "Hay extintor tipo ABC en el vehículo, con carga vigente y habilitación visible", risk: "a" },
+      { text: "Está definido y comunicado el plan de actuación ante caída de persona desde altura", risk: "a" },
+      { text: "Está definido el procedimiento ante contacto eléctrico accidental", risk: "a" },
+      { text: "El personal capacitado en RCP / primeros auxilios básicos está presente en la cuadrilla", risk: "m" }
+    ]
+  },
+  ambiental: {
+    items: [
+      { text: "Velocidad del viento dentro del límite permitido para operación de barquilla (máx. según fabricante, usualmente ≤ 45 km/h)", risk: "a" },
+      { text: "No hay riesgo de tormenta eléctrica activa o inminente (se suspende tarea de inmediato ante alerta)", risk: "a" },
+      { text: "Visibilidad adecuada para la tarea (niebla, lluvia intensa → suspensión)", risk: "m" },
+      { text: "La temperatura ambiente no compromete el rendimiento del operario en altura (golpe de calor / hipotermia)", risk: "m" },
+      { text: "En pavimento mojado o helado: se verifica estabilidad del vehículo y estado del suelo bajo estabilizadores", risk: "a" }
+    ]
+  }
+};
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+const RISK_LABEL = { a: "Riesgo ALTO", m: "Riesgo MEDIO", b: "Riesgo BAJO" };
+const RISK_CLASS = { a: "risk-a", m: "risk-m", b: "risk-b" };
+
+function renderAll() {
+  Object.keys(CHECKLIST).forEach(sec => {
+    const container = document.getElementById(`items-${sec}`);
+    const items = CHECKLIST[sec].items;
+    container.innerHTML = '';
+    items.forEach((item, idx) => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = `item-${sec}-${idx}`;
+      div.innerHTML = `
+        <div class="item-text">
+          <span class="num">${idx+1}.</span>${item.text}
+        </div>
+        <div class="item-controls">
+          <button class="btn-check btn-ok" onclick="setVal('${sec}',${idx},'ok',this)">✓ Cumple</button>
+          <button class="btn-check btn-no" onclick="setVal('${sec}',${idx},'no',this)">✗ No cumple</button>
+          <button class="btn-check btn-na" onclick="setVal('${sec}',${idx},'na',this)">— N/A</button>
+          <span class="risk ${RISK_CLASS[item.risk]}">${RISK_LABEL[item.risk]}</span>
+        </div>
+        <textarea class="item-obs" id="obs-${sec}-${idx}" placeholder="Observaciones / acción correctiva..."></textarea>
+      `;
+      container.appendChild(div);
+    });
+    updateBadge(sec);
+  });
+}
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+const state = {};
+
+function setVal(sec, idx, val, btn) {
+  if (!state[sec]) state[sec] = {};
+  const prev = state[sec][idx];
+  if (prev === val) {
+    state[sec][idx] = null;
+    btn.classList.remove('active');
+  } else {
+    state[sec][idx] = val;
+    const parent = btn.closest('.item-controls');
+    parent.querySelectorAll('.btn-check').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  const obsEl = document.getElementById(`obs-${sec}-${idx}`);
+  if (state[sec][idx] === 'no') {
+    obsEl.classList.add('visible');
+    obsEl.placeholder = "⚠ Describir no conformidad y acción correctiva requerida...";
+  } else {
+    obsEl.classList.toggle('visible', false);
+  }
+  updateBadge(sec);
+  updateSummary();
+}
+
+function updateBadge(sec) {
+  const items = CHECKLIST[sec].items;
+  const answered = Object.values(state[sec] || {}).filter(v => v !== null).length;
+  document.getElementById(`badge-${sec}`).textContent = `${answered}/${items.length}`;
+}
+
+function updateSummary() {
+  let ok=0, no=0, na=0, total=0;
+  Object.keys(CHECKLIST).forEach(sec => {
+    CHECKLIST[sec].items.forEach((_, idx) => {
+      const v = (state[sec] || {})[idx];
+      if (v === 'ok') ok++;
+      else if (v === 'no') no++;
+      else if (v === 'na') na++;
+      total++;
+    });
+  });
+  document.getElementById('count-ok').textContent = ok;
+  document.getElementById('count-no').textContent = no;
+  document.getElementById('count-na').textContent = na;
+  const answered = ok + no + na;
+  const pct = answered > 0 ? Math.round((ok / (answered - na || 1)) * 100) : 0;
+  document.getElementById('count-pct').textContent = answered > 0 ? pct+'%' : '—';
+  const progress = Math.round((answered / total) * 100);
+  document.getElementById('progress-fill').style.width = progress + '%';
+  document.getElementById('pct-label').textContent = progress + '%';
+}
+
+// ─── TOGGLE ───────────────────────────────────────────────────────────────────
+function toggleSection(sec) {
+  const body = document.getElementById(`body-${sec}`);
+  const header = body.previousElementSibling;
+  body.classList.toggle('hidden');
+  header.classList.toggle('collapsed');
+}
+
+// ─── RESET ────────────────────────────────────────────────────────────────────
+function resetForm() {
+  if (!confirm('¿Confirma iniciar un nuevo formulario? Se perderán los datos actuales.')) return;
+  Object.keys(state).forEach(k => delete state[k]);
+  document.querySelectorAll('.btn-check').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.item-obs').forEach(el => { el.classList.remove('visible'); el.value=''; });
+  document.querySelectorAll('input, select, textarea').forEach(el => { if(el.type!=='button') el.value=''; });
+  Object.keys(CHECKLIST).forEach(sec => updateBadge(sec));
+  updateSummary();
+  ['sig-inspector','sig-responsable','sig-op1','sig-op2'].forEach(clearSig);
+  resetFotos();
+}
+
+// ─── FIRMAS ───────────────────────────────────────────────────────────────────
+function initCanvas(id) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
+  let last = null;
+
+  function pos(e) {
+    const r = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / r.width;
+    const scaleY = canvas.height / r.height;
+    if (e.touches) return {
+      x: (e.touches[0].clientX - r.left) * scaleX,
+      y: (e.touches[0].clientY - r.top) * scaleY
+    };
+    return { x: (e.clientX - r.left) * scaleX, y: (e.clientY - r.top) * scaleY };
+  }
+
+  canvas.addEventListener('mousedown', e => { drawing=true; last=pos(e); });
+  canvas.addEventListener('mousemove', e => {
+    if (!drawing) return;
+    const p = pos(e);
+    ctx.beginPath(); ctx.strokeStyle='#1A1A1A'; ctx.lineWidth=2; ctx.lineCap='round';
+    ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+    last = p;
+  });
+  canvas.addEventListener('mouseup', () => drawing=false);
+  canvas.addEventListener('mouseleave', () => drawing=false);
+
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing=true; last=pos(e); }, {passive:false});
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (!drawing) return;
+    const p = pos(e);
+    ctx.beginPath(); ctx.strokeStyle='#1A1A1A'; ctx.lineWidth=2.5; ctx.lineCap='round';
+    ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+    last = p;
+  }, {passive:false});
+  canvas.addEventListener('touchend', () => drawing=false);
+}
+
+function clearSig(id) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// ─── FOTOS ────────────────────────────────────────────────────────────────────
+const FOTO_LABELS = [
+  "Vista general del área de trabajo",
+  "Estado de EPP y señalización",
+  "Foto adicional"
+];
+let fotoCount = 0;
+let fotoSlotCount = 0;
+
+function createFotoSlot(idx) {
+  const slotId = `foto-slot-${idx}`;
+  const inputId = `foto-input-${idx}`;
+  const previewId = `foto-preview-${idx}`;
+  const captionId = `foto-caption-${idx}`;
+  const labelText = FOTO_LABELS[idx] || `Foto ${idx + 1}`;
+  const isMandatory = idx < 2;
+
+  const div = document.createElement('div');
+  div.className = 'foto-slot';
+  div.id = slotId;
+  div.innerHTML = `
+    <input type="file" accept="image/*" capture="environment" id="${inputId}" onchange="handleFoto(${idx}, this)">
+    <div class="placeholder">
+      <div class="cam-icon">📷</div>
+      <div class="cam-label">${labelText}</div>
+      <div class="cam-num">${isMandatory ? '★ Obligatoria' : 'Opcional'}</div>
+    </div>
+    <img class="foto-preview" id="${previewId}" alt="foto ${idx+1}">
+    <div class="foto-caption" id="${captionId}">${labelText}</div>
+    <button class="foto-remove" onclick="removeFoto(${idx})" title="Eliminar foto">✕</button>
+  `;
+  return div;
+}
+
+function initFotos() {
+  const grid = document.getElementById('fotos-grid');
+  grid.innerHTML = '';
+  fotoSlotCount = 2;
+  for (let i = 0; i < 2; i++) {
+    grid.appendChild(createFotoSlot(i));
+  }
+  updateFotoCounter();
+}
+
+function addFotoSlot() {
+  const grid = document.getElementById('fotos-grid');
+  const idx = fotoSlotCount;
+  fotoSlotCount++;
+  grid.appendChild(createFotoSlot(idx));
+  document.getElementById(`foto-total`).textContent = fotoSlotCount;
+  // If odd number, add blank to keep grid balanced
+  updateFotoCounter();
+}
+
+function handleFoto(idx, input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const reader = new FileReader();
+  reader.onload = e => {
+    const slot = document.getElementById(`foto-slot-${idx}`);
+    const preview = document.getElementById(`foto-preview-${idx}`);
+    const caption = document.getElementById(`foto-caption-${idx}`);
+    preview.src = e.target.result;
+    slot.classList.add('has-foto');
+    caption.textContent = file.name.length > 28 ? file.name.substring(0,25)+'...' : file.name;
+    updateFotoCounter();
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeFoto(idx) {
+  const slot = document.getElementById(`foto-slot-${idx}`);
+  const preview = document.getElementById(`foto-preview-${idx}`);
+  const input = document.getElementById(`foto-input-${idx}`);
+  const caption = document.getElementById(`foto-caption-${idx}`);
+  slot.classList.remove('has-foto');
+  preview.src = '';
+  input.value = '';
+  const labelText = FOTO_LABELS[idx] || `Foto ${idx + 1}`;
+  caption.textContent = labelText;
+  updateFotoCounter();
+}
+
+function updateFotoCounter() {
+  const loaded = document.querySelectorAll('.foto-slot.has-foto').length;
+  document.getElementById('foto-count').textContent = loaded;
+  document.getElementById('foto-total').textContent = fotoSlotCount;
+  const warn = document.getElementById('foto-warn');
+  warn.classList.toggle('visible', loaded < 2);
+}
+
+function resetFotos() {
+  fotoSlotCount = 0;
+  fotoCount = 0;
+  initFotos();
+  document.getElementById('foto-desc-general').value = '';
+}
+
+// ─── GENERACIÓN PDF ───────────────────────────────────────────────────────────
+async function generarPDF() {
+  const btn = document.getElementById('btn-pdf');
+  const status = document.getElementById('pdf-status');
+
+  btn.textContent = '⏳ Generando PDF...';
+  btn.disabled = true;
+  status.style.display = 'block';
+  status.textContent = 'Preparando documento...';
+
+  await new Promise(r => setTimeout(r, 50));
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const PW = 210, PH = 297;
+    const ML = 14, MR = 14, MT = 14;
+    const CW = PW - ML - MR;
+    let y = MT;
+    let pageNum = 1;
+
+    // ── Colores S2 ──
+    const ROJO  = [192, 19, 42];
+    const BORDE = [123, 13, 30];
+    const ROSA  = [232, 82, 106];
+    const GRIS1 = [26, 26, 26];
+    const GRIS3 = [136, 136, 136];
+    const GRIS4 = [221, 221, 221];
+    const BLANCO = [255, 255, 255];
+    const VERDE  = [46, 125, 50];
+    const ROJO_N = [198, 40, 40];
+    const GRIS_N = [117, 117, 117];
+    const WARN   = [230, 81, 0];
+
+    function checkPage(needed = 10) {
+      if (y + needed > PH - 16) {
+        addFooter();
+        doc.addPage();
+        pageNum++;
+        y = MT;
+        addPageHeader();
+      }
+    }
+
+    function addFooter() {
+      doc.setFontSize(8);
+      doc.setTextColor(...GRIS3);
+      doc.text('S2 Seguridad — Consultoría en Seguridad e Higiene Laboral', ML, PH - 8);
+      doc.text(`Página ${pageNum}`, PW - MR, PH - 8, { align: 'right' });
+      doc.setDrawColor(...GRIS4);
+      doc.line(ML, PH - 12, PW - MR, PH - 12);
+    }
+
+    function addPageHeader() {
+      // banda roja delgada en páginas adicionales
+      doc.setFillColor(...ROJO);
+      doc.rect(0, 0, PW, 8, 'F');
+      doc.setFontSize(8);
+      doc.setTextColor(...BLANCO);
+      doc.setFont('helvetica', 'bold');
+      doc.text('S2 SEGURIDAD — CHECKLIST TRABAJOS EN ALTURA — VÍA PÚBLICA', PW / 2, 5.5, { align: 'center' });
+      y = 14;
+    }
+
+    // ── ENCABEZADO PÁGINA 1 ──
+    // Fondo degradado simulado con rectángulos
+    doc.setFillColor(...BORDE);
+    doc.rect(0, 0, PW, 38, 'F');
+    doc.setFillColor(...ROJO);
+    doc.rect(PW * 0.4, 0, PW * 0.6, 38, 'F');
+
+    // Logo badge S2
+    doc.setFillColor(...BLANCO);
+    doc.roundedRect(ML, 7, 18, 18, 2, 2, 'F');
+    doc.setTextColor(...ROJO);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text('S2', ML + 9, 19, { align: 'center' });
+
+    // Nombre consultora
+    doc.setTextColor(...BLANCO);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.text('S2 SEGURIDAD', ML + 22, 13);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.text('Consultoría en Seguridad e Higiene Laboral', ML + 22, 18);
+
+    // Título principal
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(15);
+    doc.text('CHECKLIST DE SEGURIDAD', ML + 22, 27);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Trabajos en Altura — Vía Pública | Barquilla sobre camión articulado', ML + 22, 33);
+
+    y = 44;
+
+    // ── DATOS GENERALES ──
+    status.textContent = 'Escribiendo datos generales...';
+    await new Promise(r => setTimeout(r, 10));
+
+    doc.setFillColor(253, 240, 242);
+    doc.roundedRect(ML, y, CW, 6, 1, 1, 'F');
+    doc.setDrawColor(...ROJO);
+    doc.rect(ML, y, 2, 6, 'F');
+    doc.setTextColor(...ROJO);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.text('DATOS DE LA INSPECCIÓN', ML + 5, y + 4.2);
+    y += 9;
+
+    const campos = [
+      ['Empresa / Razón Social', val('empresa')],
+      ['Fecha', val('fecha')],
+      ['Hora de inicio', val('hora')],
+      ['Ubicación / Tramo de vía', val('ubicacion')],
+      ['Inspector S2', val('inspector')],
+      ['Legajo / DNI', val('legajo')],
+      ['Tipo de trabajo', val('tipo_trabajo')],
+      ['Operario en altura', val('op_altura')],
+      ['Operario a cota cero', val('op_cero')],
+      ['Nº camión / Patente', val('camion')],
+    ];
+
+    // Grid de 2 columnas
+    const colW = CW / 2 - 2;
+    for (let i = 0; i < campos.length; i += 2) {
+      checkPage(8);
+      const left  = campos[i];
+      const right = campos[i + 1];
+      // izquierda
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(...GRIS3);
+      doc.text(left[0].toUpperCase(), ML, y);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...GRIS1);
+      doc.text(left[1] || '—', ML, y + 4.5);
+      doc.setDrawColor(...GRIS4);
+      doc.line(ML, y + 6, ML + colW, y + 6);
+      // derecha
+      if (right) {
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(...GRIS3);
+        doc.text(right[0].toUpperCase(), ML + colW + 4, y);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...GRIS1);
+        doc.text(right[1] || '—', ML + colW + 4, y + 4.5);
+        doc.line(ML + colW + 4, y + 6, PW - MR, y + 6);
+      }
+      y += 10;
+    }
+
+    // Obs generales
+    const obsGen = val('obs_generales');
+    if (obsGen) {
+      checkPage(16);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(...GRIS3);
+      doc.text('OBSERVACIONES GENERALES', ML, y);
+      y += 4;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...GRIS1);
+      const lines = doc.splitTextToSize(obsGen, CW);
+      doc.text(lines, ML, y);
+      y += lines.length * 4.5 + 4;
+    }
+
+    // ── RESUMEN ──
+    checkPage(22);
+    let totalOk = 0, totalNo = 0, totalNa = 0, totalItems = 0;
+    Object.keys(CHECKLIST).forEach(sec => {
+      CHECKLIST[sec].items.forEach((_, idx) => {
+        totalItems++;
+        const v = (state[sec] || {})[idx];
+        if (v === 'ok') totalOk++;
+        else if (v === 'no') totalNo++;
+        else if (v === 'na') totalNa++;
+      });
+    });
+    const answered = totalOk + totalNo + totalNa;
+    const conformidad = answered > 0 ? Math.round((totalOk / Math.max(answered - totalNa, 1)) * 100) : 0;
+
+    doc.setFillColor(253, 240, 242);
+    doc.roundedRect(ML, y, CW, 18, 2, 2, 'F');
+    doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(...ROJO);
+    doc.text('RESUMEN DE INSPECCIÓN', ML + CW / 2, y + 5, { align: 'center' });
+
+    const cols = [
+      { label: 'CUMPLE', val: totalOk, color: VERDE },
+      { label: 'NO CUMPLE', val: totalNo, color: ROJO_N },
+      { label: 'N/A', val: totalNa, color: GRIS_N },
+      { label: 'CONFORMIDAD', val: conformidad + '%', color: ROJO },
+    ];
+    const cw4 = CW / 4;
+    cols.forEach((c, i) => {
+      const cx = ML + cw4 * i + cw4 / 2;
+      doc.setFontSize(16); doc.setFont('helvetica', 'bold'); doc.setTextColor(...c.color);
+      doc.text(String(c.val), cx, y + 13, { align: 'center' });
+      doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GRIS3);
+      doc.text(c.label, cx, y + 17, { align: 'center' });
+    });
+    y += 22;
+
+    // ── SECCIONES ──
+    status.textContent = 'Escribiendo ítems del checklist...';
+    await new Promise(r => setTimeout(r, 10));
+
+    const SEC_NAMES = {
+      senalizacion: '1. Señalización y Vallado',
+      epp:          '2. Estado y Uso de EPP',
+      electrico:    '3. Riesgo Eléctrico',
+      barquilla:    '4. Barquilla y Brazo Articulado',
+      colectiva:    '5. Protección Colectiva',
+      herramientas: '6. Herramientas y Equipos',
+      orden:        '7. Orden y Limpieza',
+      vial:         '8. Riesgo Vial y Tránsito',
+      emergencias:  '9. Emergencias y Comunicaciones',
+      ambiental:    '10. Condiciones Ambientales',
+    };
+
+    for (const sec of Object.keys(CHECKLIST)) {
+      checkPage(14);
+
+      // Header sección
+      doc.setFillColor(...BORDE);
+      doc.rect(ML, y, CW, 7, 'F');
+      doc.setTextColor(...BLANCO);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.text(SEC_NAMES[sec].toUpperCase(), ML + 3, y + 5);
+
+      // Conteo de la sección
+      let sOk=0, sNo=0, sNa=0;
+      CHECKLIST[sec].items.forEach((_, idx) => {
+        const v = (state[sec] || {})[idx];
+        if (v==='ok') sOk++; else if (v==='no') sNo++; else if (v==='na') sNa++;
+      });
+      doc.setFontSize(7.5);
+      doc.text(`✓${sOk}  ✗${sNo}  —${sNa}`, PW - MR - 2, y + 5, { align: 'right' });
+      y += 9;
+
+      // Items
+      CHECKLIST[sec].items.forEach((item, idx) => {
+        const v = (state[sec] || {})[idx];
+        const obs = document.getElementById(`obs-${sec}-${idx}`)?.value || '';
+
+        // Altura estimada del item
+        const textLines = doc.splitTextToSize(`${idx+1}. ${item.text}`, CW - 28);
+        const obsLines  = obs ? doc.splitTextToSize(obs, CW - 8) : [];
+        const itemH = 6 + textLines.length * 4 + (obs ? obsLines.length * 3.5 + 3 : 0) + 2;
+
+        checkPage(itemH);
+
+        // Fondo alternado
+        if (idx % 2 === 0) {
+          doc.setFillColor(255, 249, 250);
+          doc.rect(ML, y, CW, itemH - 1, 'F');
+        }
+
+        // Número
+        doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(...ROJO);
+        doc.text(`${idx+1}.`, ML + 1, y + 4.5);
+
+        // Texto item
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(...GRIS1); doc.setFontSize(8);
+        doc.text(textLines, ML + 6, y + 4.5);
+
+        // Badge riesgo
+        const riskColors = { a: ROJO_N, m: WARN, b: VERDE };
+        const riskTexts  = { a: 'ALTO', m: 'MEDIO', b: 'BAJO' };
+        const rc = riskColors[item.risk] || GRIS3;
+        doc.setFontSize(6); doc.setFont('helvetica', 'bold'); doc.setTextColor(...rc);
+        doc.text(riskTexts[item.risk] || '', PW - MR - 1, y + 4, { align: 'right' });
+
+        // Badge resultado
+        const bx = PW - MR - 18;
+        const by = y + 1;
+        if (v === 'ok') {
+          doc.setFillColor(...VERDE); doc.roundedRect(bx, by, 14, 5, 1, 1, 'F');
+          doc.setTextColor(...BLANCO); doc.setFontSize(7); doc.setFont('helvetica','bold');
+          doc.text('CUMPLE', bx + 7, by + 3.6, { align: 'center' });
+        } else if (v === 'no') {
+          doc.setFillColor(...ROJO_N); doc.roundedRect(bx, by, 14, 5, 1, 1, 'F');
+          doc.setTextColor(...BLANCO); doc.setFontSize(6.5); doc.setFont('helvetica','bold');
+          doc.text('NO CUMPLE', bx + 7, by + 3.6, { align: 'center' });
+        } else if (v === 'na') {
+          doc.setFillColor(...GRIS_N); doc.roundedRect(bx, by, 14, 5, 1, 1, 'F');
+          doc.setTextColor(...BLANCO); doc.setFontSize(7); doc.setFont('helvetica','bold');
+          doc.text('N/A', bx + 7, by + 3.6, { align: 'center' });
+        } else {
+          doc.setDrawColor(...GRIS4); doc.roundedRect(bx, by, 14, 5, 1, 1, 'S');
+          doc.setTextColor(...GRIS3); doc.setFontSize(6.5);
+          doc.text('SIN MARCAR', bx + 7, by + 3.6, { align: 'center' });
+        }
+
+        let yItem = y + 4 + textLines.length * 4;
+
+        // Observación
+        if (obs) {
+          doc.setFillColor(255, 243, 224);
+          doc.rect(ML + 6, yItem, CW - 6, obsLines.length * 3.5 + 2, 'F');
+          doc.setFillColor(...WARN);
+          doc.rect(ML + 6, yItem, 1.5, obsLines.length * 3.5 + 2, 'F');
+          doc.setFont('helvetica', 'italic'); doc.setFontSize(7.5); doc.setTextColor(...WARN);
+          doc.text('OBS:', ML + 9, yItem + 3);
+          doc.setTextColor(80, 50, 0);
+          doc.text(obsLines, ML + 16, yItem + 3);
+          yItem += obsLines.length * 3.5 + 4;
+        }
+
+        // Separador
+        doc.setDrawColor(...GRIS4);
+        doc.line(ML, yItem, PW - MR, yItem);
+        y = yItem + 2;
+      });
+
+      y += 4;
+    }
+
+    // ── FOTOS ──
+    const fotoSlots = document.querySelectorAll('.foto-slot.has-foto');
+    if (fotoSlots.length > 0) {
+      status.textContent = 'Insertando fotografías...';
+      await new Promise(r => setTimeout(r, 10));
+
+      checkPage(14);
+      doc.setFillColor(...BORDE);
+      doc.rect(ML, y, CW, 7, 'F');
+      doc.setTextColor(...BLANCO); doc.setFont('helvetica','bold'); doc.setFontSize(9);
+      doc.text('REGISTRO FOTOGRÁFICO', ML + 3, y + 5);
+      doc.setFontSize(7.5);
+      doc.text(`${fotoSlots.length} foto(s) adjunta(s)`, PW - MR - 2, y + 5, { align: 'right' });
+      y += 11;
+
+      const fotoDesc = document.getElementById('foto-desc-general').value;
+      if (fotoDesc) {
+        checkPage(12);
+        doc.setFont('helvetica','italic'); doc.setFontSize(8); doc.setTextColor(...GRIS3);
+        const dl = doc.splitTextToSize(fotoDesc, CW);
+        doc.text(dl, ML, y);
+        y += dl.length * 4 + 4;
+      }
+
+      // Fotos en grilla 2 columnas
+      const fotoW = (CW - 6) / 2;
+      const fotoH = fotoW * 0.65;
+
+      let col = 0;
+      for (const slot of fotoSlots) {
+        const img = slot.querySelector('.foto-preview');
+        const cap = slot.querySelector('.foto-caption');
+        if (!img || !img.src) continue;
+
+        if (col === 0) checkPage(fotoH + 14);
+
+        const fx = ML + col * (fotoW + 6);
+        try {
+          doc.addImage(img.src, 'JPEG', fx, y, fotoW, fotoH, undefined, 'MEDIUM');
+          // Pie de foto
+          doc.setFillColor(123, 13, 30, 0.7);
+          doc.setFillColor(50, 20, 25);
+          doc.rect(fx, y + fotoH - 7, fotoW, 7, 'F');
+          doc.setTextColor(...BLANCO); doc.setFont('helvetica','normal'); doc.setFontSize(6.5);
+          const capText = doc.splitTextToSize(cap?.textContent || '', fotoW - 4);
+          doc.text(capText[0] || '', fx + 2, y + fotoH - 2.5);
+        } catch(e) {
+          doc.setFillColor(...GRIS4);
+          doc.rect(fx, y, fotoW, fotoH, 'F');
+          doc.setTextColor(...GRIS3); doc.setFontSize(8);
+          doc.text('[imagen no disponible]', fx + fotoW/2, y + fotoH/2, { align: 'center' });
+        }
+
+        col++;
+        if (col >= 2) { col = 0; y += fotoH + 10; }
+      }
+      if (col === 1) y += fotoH + 10;
+      y += 4;
+    }
+
+    // ── FIRMAS ──
+    status.textContent = 'Insertando firmas...';
+    await new Promise(r => setTimeout(r, 10));
+
+    checkPage(50);
+    doc.setFillColor(...BORDE);
+    doc.rect(ML, y, CW, 7, 'F');
+    doc.setTextColor(...BLANCO); doc.setFont('helvetica','bold'); doc.setFontSize(9);
+    doc.text('FIRMAS Y CONFORMIDAD', ML + 3, y + 5);
+    y += 10;
+
+    const firmas = [
+      { id: 'sig-inspector',    label: 'Inspector S2 Seguridad' },
+      { id: 'sig-responsable',  label: 'Responsable de Empresa' },
+      { id: 'sig-op1',          label: 'Operario en Altura' },
+      { id: 'sig-op2',          label: 'Operario a Cota Cero' },
+    ];
+    const sigW = (CW - 6) / 2;
+    const sigH = 22;
+
+    for (let i = 0; i < firmas.length; i += 2) {
+      checkPage(sigH + 14);
+      [0, 1].forEach(col => {
+        const f = firmas[i + col];
+        if (!f) return;
+        const fx = ML + col * (sigW + 6);
+        doc.setDrawColor(...GRIS4);
+        doc.roundedRect(fx, y, sigW, sigH, 1, 1, 'S');
+
+        const canvas = document.getElementById(f.id);
+        if (canvas) {
+          try {
+            const dataUrl = canvas.toDataURL('image/png');
+            doc.addImage(dataUrl, 'PNG', fx + 2, y + 1, sigW - 4, sigH - 8);
+          } catch(e) {}
+        }
+
+        doc.setDrawColor(...GRIS4);
+        doc.line(fx + 4, y + sigH - 6, fx + sigW - 4, y + sigH - 6);
+        doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(...GRIS3);
+        doc.text(f.label.toUpperCase(), fx + sigW / 2, y + sigH - 2, { align: 'center' });
+      });
+      y += sigH + 8;
+    }
+
+    // ── FOOTER FINAL ──
+    addFooter();
+
+    // ── GUARDAR — compatible iOS / Android / Desktop ──
+    status.textContent = 'Preparando descarga...';
+    await new Promise(r => setTimeout(r, 10));
+
+    const empresa = val('empresa') || 'S2';
+    const fecha   = val('fecha')   || new Date().toISOString().split('T')[0];
+    const fname   = `Checklist_S2_${empresa.replace(/\s+/g,'_')}_${fecha}.pdf`;
+
+    const pdfBlob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(pdfBlob);
+
+    // Detectar iOS (Safari no soporta download attribute ni .save())
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+    if (isIOS) {
+      // iOS: abrir en nueva pestaña → el usuario toca Compartir → Guardar en Archivos
+      window.open(blobUrl, '_blank');
+      status.style.background = '#E8F5E9';
+      status.style.borderColor = '#2E7D32';
+      status.style.color = '#1B5E20';
+      status.innerHTML = `✅ PDF listo. <strong>En iOS:</strong> tocá el ícono de compartir (□↑) y elegí "Guardar en Archivos" o "Imprimir".`;
+    } else {
+      // Android / Desktop: forzar descarga con <a> oculto
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = fname;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+      }, 2000);
+      status.style.background = '#E8F5E9';
+      status.style.borderColor = '#2E7D32';
+      status.style.color = '#1B5E20';
+      status.textContent = `✅ Descargando: ${fname}`;
+    }
+
+    btn.textContent = '📄 Generar PDF';
+    btn.disabled = false;
+    setTimeout(() => { status.style.display = 'none'; }, 7000);
+
+  } catch (err) {
+    console.error(err);
+    status.style.background = '#FFF3E0';
+    status.style.borderColor = '#E65100';
+    status.style.color = '#E65100';
+    status.textContent = '⚠ Error al generar el PDF. Intente nuevamente.';
+    btn.textContent = '📄 Generar PDF';
+    btn.disabled = false;
+  }
+}
+
+function val(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderAll();
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('fecha').value = today;
+  ['sig-inspector','sig-responsable','sig-op1','sig-op2'].forEach(initCanvas);
+  initFotos();
+});
+</script>
+</body>
+</html>
